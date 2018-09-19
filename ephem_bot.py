@@ -2,6 +2,14 @@ from telegram.ext import Updater, CommandHandler , MessageHandler, Filters
 from os import environ
 import pprint
 import logging
+import ephem
+import inspect
+
+planet_names = [s for s in dir(ephem)
+                if s != "Planet" and not s.endswith("Body") 
+                and inspect.isclass(getattr(ephem, s)) 
+                and issubclass(getattr(ephem, s), ephem.Planet)]
+
 
 logging.basicConfig(format='%(asctime)s - [%(name)s] - %(levelname)s - %(message)s',
                     level=logging.DEBUG,
@@ -31,12 +39,36 @@ def talk_to_me(bot, update):
     logger.info(user_text)
     update.message.reply_text(user_text)
 
+def ephem_planet(bot, update):
+
+    text = update.message.text  
+    msg = "ephem_planet: {}".format(text)
+    logger.debug(msg)
+    wrds = text.split(' ')
+
+    planet_found = None
+
+    for w in wrds:
+        if w in planet_names:
+            planet_found = w
+            break
+    
+    if planet_found:
+        reply = "Planet {} found".format(planet_found)
+    else:
+        reply = "Planet not found"
+
+    update.message.reply_text(reply)
+
 
 def main():
     mybot = Updater(API_KEY)
     mydisp = mybot.dispatcher
     mydisp.add_handler(CommandHandler("start", greet_user))
+    mydisp.add_handler(CommandHandler("ephem", ephem_planet))
+
     mydisp.add_handler(MessageHandler(Filters.text, talk_to_me))
+
 
     mybot.start_polling()
     mybot.idle()
