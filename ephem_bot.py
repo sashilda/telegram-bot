@@ -4,11 +4,13 @@ import pprint
 import logging
 import ephem
 import inspect
+import datetime
 
-planet_names = [s for s in dir(ephem)
-                if s != "Planet" and not s.endswith("Body") 
-                and inspect.isclass(getattr(ephem, s)) 
-                and issubclass(getattr(ephem, s), ephem.Planet)]
+# planet_names = [s for s in dir(ephem)
+#                 if s != "Planet" and not s.endswith("Body") 
+#                 and inspect.isclass(getattr(ephem, s)) 
+#                 and issubclass(getattr(ephem, s), ephem.Planet)]
+planet_names = [p[2] for p in ephem._libastro.builtin_planets()[:8]]
 
 
 logging.basicConfig(format='%(asctime)s - [%(name)s] - %(levelname)s - %(message)s',
@@ -54,7 +56,11 @@ def ephem_planet(bot, update):
             break
     
     if planet_found:
-        reply = "Planet {} found".format(planet_found)
+        planet_class = getattr(ephem, planet_found)
+        today = datetime.datetime.today().strftime('%Y/%m/%d') #'2018/09/19'
+        planet = planet_class(today)
+        constellation = ephem.constellation(planet)[1]
+        reply = "{} now in {}".format(planet_found, constellation)
     else:
         reply = "Planet not found"
 
@@ -65,7 +71,7 @@ def main():
     mybot = Updater(API_KEY)
     mydisp = mybot.dispatcher
     mydisp.add_handler(CommandHandler("start", greet_user))
-    mydisp.add_handler(CommandHandler("ephem", ephem_planet))
+    mydisp.add_handler(CommandHandler("planet", ephem_planet))
 
     mydisp.add_handler(MessageHandler(Filters.text, talk_to_me))
 
