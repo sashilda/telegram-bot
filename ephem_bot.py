@@ -1,10 +1,17 @@
-from telegram.ext import Updater, CommandHandler , MessageHandler, Filters     
+from telegram.ext import Updater, CommandHandler , MessageHandler, Filters 
+
+from glob import glob
+from emoji import emojize
 from os import environ
+from random import choice
+
+
 import pprint
 import logging
 import ephem
 import inspect
 import datetime
+import settings
 
 # planet_names = [s for s in dir(ephem)
 #                 if s != "Planet" and not s.endswith("Body") 
@@ -25,14 +32,16 @@ logger.addHandler(ch)
 # Run in cmd line "source secrets.txt" before running
 API_KEY = environ.get('API_KEY') 
 
-def greet_user(bot, update):
-    text = 'Вызван /start'
-    print(text)
-    logger.debug(text)
-    logging.info(text)
-    # pprint method print a dictionary in a column
-    pprint.pprint(update.to_dict())
+#USER_EMOJI = [':smiley_cat:', ':smiling_imp:', ':panda_face:', ':dog:']
 
+def greet_user(bot, update):
+    smile = emojize(choice(settings.USER_EMOJI), use_aliases=True)
+
+    text = 'Hello! {}'.format(smile)
+    
+    logger.debug(text)
+    logging.info(pprint.pformat(update.to_dict()))
+    # pprint method print a dictionary in a column
     update.message.reply_text(text)
 
 def talk_to_me(bot, update):
@@ -66,12 +75,17 @@ def ephem_planet(bot, update):
 
     update.message.reply_text(reply)
 
+def send_cat_picture(bot, update):
+    cat_list = glob('Images/*cat*.jp*g')
+    cat_pic = choice(cat_list)
+    bot.send_photo(chat_id=update.message.chat.id, photo=open(cat_pic, 'rb'))
 
 def main():
-    mybot = Updater(API_KEY)
+    mybot = Updater("688721336:AAFy8ftMA6UZlFumVUSncQGMm79NAuHGJbA")#(API_KEY)
     mydisp = mybot.dispatcher
     mydisp.add_handler(CommandHandler("start", greet_user))
     mydisp.add_handler(CommandHandler("planet", ephem_planet))
+    mydisp.add_handler(CommandHandler("cat", send_cat_picture))
 
     mydisp.add_handler(MessageHandler(Filters.text, talk_to_me))
 
