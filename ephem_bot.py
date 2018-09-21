@@ -26,8 +26,8 @@ logging.basicConfig(format='%(asctime)s - [%(name)s] - %(levelname)s - %(message
 telegram_logger = logging.getLogger("telegram")
 telegram_logger.setLevel(logging.INFO)
 logger = logging.getLogger(__name__)
-ch = logging.StreamHandler()
-logger.addHandler(ch)
+#ch = logging.StreamHandler()
+#logger.addHandler(ch)
 
 # Run in cmd line "source secrets.txt" before running
 API_KEY = environ.get('API_KEY') 
@@ -40,7 +40,6 @@ def greet_user(bot, update, user_data):
 
     text = 'Hello! {}'.format(emo)
     
-    logger.debug(text)
     # logging.info(pprint.pformat(update.to_dict()))
     # pprint method print a dictionary in a column
     update.message.reply_text(text)
