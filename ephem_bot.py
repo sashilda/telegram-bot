@@ -94,5 +94,11 @@ def main():
 
     mybot.start_polling()
     mybot.idle()
-       
-main()       
+
+if __name__ == "__main__":
+     logging.basicConfig(format='%(asctime)s - [%(name)s] - %(levelname)s - %(message)s',
+                    level=logging.DEBUG,
+                    filename='bot.log')
+    telegram_logger = logging.getLogger("telegram")
+    telegram_logger.setLevel(logging.INFO)
+    main()       
