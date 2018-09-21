@@ -2,7 +2,7 @@ import datetime
 import logging
 
 import ephem
-
+from utils import get_keyboard
 logger = logging.getLogger(__name__)
 
 planet_names = [p[2] for p in ephem._libastro.builtin_planets()[:8]]
@@ -30,4 +30,5 @@ def ephem_planet(bot, update, user_data):
     else:
         reply = "Planet not found"
 
-    update.message.reply_text(reply)
+    update.message.reply_text(reply,
+                                reply_markup=get_keyboard())
