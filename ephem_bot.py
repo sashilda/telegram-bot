@@ -34,23 +34,26 @@ API_KEY = environ.get('API_KEY')
 
 #USER_EMOJI = [':smiley_cat:', ':smiling_imp:', ':panda_face:', ':dog:']
 
-def greet_user(bot, update):
-    smile = emojize(choice(settings.USER_EMOJI), use_aliases=True)
+def greet_user(bot, update, user_data):
+    emo = emojize(choice(settings.USER_EMOJI), use_aliases=True)
+    user_data['emo'] = emo
 
-    text = 'Hello! {}'.format(smile)
+    text = 'Hello! {}'.format(emo)
     
     logger.debug(text)
-    logging.info(pprint.pformat(update.to_dict()))
+    # logging.info(pprint.pformat(update.to_dict()))
     # pprint method print a dictionary in a column
     update.message.reply_text(text)
 
-def talk_to_me(bot, update):
-    user_text = update.message.text 
+def talk_to_me(bot, update, user_data):
+    user_text = "Hello {}{}! You wrote: {}".format(update.message.chat.first_name,
+                                                   user_data['emo'],
+                                                   update.message.text) 
     # print(user_text)
     logger.info(user_text)
     update.message.reply_text(user_text)
 
-def ephem_planet(bot, update):
+def ephem_planet(bot, update, user_data):
 
     text = update.message.text  
     msg = "ephem_planet: {}".format(text)
@@ -75,7 +78,7 @@ def ephem_planet(bot, update):
 
     update.message.reply_text(reply)
 
-def send_cat_picture(bot, update):
+def send_cat_picture(bot, update, user_data):
     cat_list = glob('Images/*cat*.jp*g')
     cat_pic = choice(cat_list)
     bot.send_photo(chat_id=update.message.chat.id, photo=open(cat_pic, 'rb'))
@@ -83,11 +86,11 @@ def send_cat_picture(bot, update):
 def main():
     mybot = Updater("688721336:AAFy8ftMA6UZlFumVUSncQGMm79NAuHGJbA")#(API_KEY)
     mydisp = mybot.dispatcher
-    mydisp.add_handler(CommandHandler("start", greet_user))
-    mydisp.add_handler(CommandHandler("planet", ephem_planet))
-    mydisp.add_handler(CommandHandler("cat", send_cat_picture))
+    mydisp.add_handler(CommandHandler(["start", "hello"], greet_user, pass_user_data=True))
+    mydisp.add_handler(CommandHandler("planet", ephem_planet, pass_user_data=True))
+    mydisp.add_handler(CommandHandler("cat", send_cat_picture, pass_user_data=True))
 
-    mydisp.add_handler(MessageHandler(Filters.text, talk_to_me))
+    mydisp.add_handler(MessageHandler(Filters.text, talk_to_me, pass_user_data=True))
 
 
     mybot.start_polling()
