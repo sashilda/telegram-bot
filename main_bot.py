@@ -1,6 +1,6 @@
 import logging
 
-from telegram.ext import Updater, CommandHandler , MessageHandler, Filters 
+from telegram.ext import Updater, CommandHandler , MessageHandler, RegexHandler, Filters 
 
 from common_handlers import greet_user, talk_to_me
 from cat_handlers import send_cat_picture
@@ -21,7 +21,10 @@ def start_bot():
 
     # cat-bot specific handler
     mydisp.add_handler(CommandHandler("cat", send_cat_picture, pass_user_data=True))
-    
+
+    # cat-bot specific handler
+    mydisp.add_handler(RegexHandler('^(Send cat)$', send_cat_picture, pass_user_data=True))
+
     # common free text handler
     mydisp.add_handler(MessageHandler(Filters.text, talk_to_me, pass_user_data=True))
 
@@ -34,5 +37,5 @@ if __name__== '__main__':
                     filename='bot.log')
     telegram_logger = logging.getLogger("telegram")
     telegram_logger.setLevel(logging.INFO)
-    
+
     start_bot()  

@@ -1,5 +1,6 @@
 from random import choice
 import logging
+from telegram import ReplyKeyboardMarkup
 
 from emoji import emojize
 
@@ -12,10 +13,11 @@ def greet_user(bot, update, user_data):
     user_data['emo'] = emo
 
     text = 'Hello! {}'.format(emo)
+    my_keyboard = ReplyKeyboardMarkup([['Send cat']])
     
     # logging.info(pprint.pformat(update.to_dict()))
     # pprint method print a dictionary in a column
-    update.message.reply_text(text)
+    update.message.reply_text(text, reply_markup=my_keyboard)
 
 
 def talk_to_me(bot, update, user_data):
