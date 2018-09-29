@@ -105,6 +105,7 @@ venv.bak/
 .ipynb_checkpoints/
 *.ipynb
 .idea/
+.vscode/
 
 secrets.txt
 *.log
